@@ -100,8 +100,11 @@ code {
 
 .site-nav a.is-current {
     color: var(--paper);
-    background: var(--panel);
-    box-shadow: inset 0 -2px 0 var(--accent);
+    background: var(--line-strong);
+}
+
+.site-nav a.is-current:hover {
+    background: var(--line-strong);
 }
 
 .btn-primary,
