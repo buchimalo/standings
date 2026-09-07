@@ -149,7 +149,7 @@
         for (let i = 0; i < inputs.length; i++) {
             const name = inputs[i].value.trim();
             if (!name) return fail(err, (i + 1) + '位が空です');
-            if (!byName[name]) return fail(err, '「' + name + '」はマスタに登録されていません');
+            if (!byName[name]) return fail(err, '「' + name + '」はマスターに登録されていません');
             if (ids.indexOf(byName[name]) >= 0) return fail(err, '「' + name + '」が重複しています');
             ids.push(byName[name]);
         }

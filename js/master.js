@@ -1,4 +1,4 @@
-// js/master.js — プレイヤー / 集計期間 のマスタ管理
+// js/master.js — プレイヤー / 集計期間 のマスター管理
 (function () {
     'use strict';
 

@@ -23,7 +23,7 @@
 
     const ADMIN_KEY = 'pcs.admin';
     const DEMO_KEY = 'pcs.demo';
-    // 入力・マスタ編集用の共有アカウント。パスワードは Firebase 側で照合する
+    // 入力・マスター編集用の共有アカウント。パスワードは Firebase 側で照合する
     const ADMIN_EMAIL = 'standings@pokachi.jp';
     // 練習モード（?demo=1）だけで使う簡易パスワードの SHA-256。初期値は pokachi
     const ADMIN_HASH = '038e0f0d74794838f5d4cadf30962e4e8549941157e702dafd8e4f2f222d4c45';
