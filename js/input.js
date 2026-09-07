@@ -56,13 +56,6 @@
     function renderLists() {
         document.getElementById('player-list').innerHTML = sortedList(state.data.players)
             .map(p => '<option value="' + esc(p.name) + '">').join('');
-        const codes = {};
-        Object.keys(state.data.matches || {}).forEach(k => {
-            const c = state.data.matches[k].code;
-            if (c) codes[c] = true;
-        });
-        document.getElementById('codes').innerHTML = Object.keys(codes).sort()
-            .map(c => '<option value="' + esc(c) + '">').join('');
     }
 
     function renderRecent() {
@@ -77,19 +70,18 @@
                 '<td class="c-name">' + (i === 0 ? '<b>' : '') + esc(nameOf(id)) + (i === 0 ? '</b>' : '') + '</td>').join('');
             return '<tr' + (m.id === state.editId ? ' class="is-editing"' : '') + '>' +
                 '<td class="num">' + m.no + '</td>' +
-                '<td class="num">' + formatDate(m.date) + '</td>' +
-                '<td>' + esc(m.code || '') + '</td>' + names +
+                '<td class="num">' + formatDate(m.date) + '</td>' + names +
                 '<td class="c-ops">' +
                 '<button type="button" class="btn-mini" data-edit="' + esc(m.id) + '">編集</button>' +
                 '<button type="button" class="btn-mini danger" data-del="' + esc(m.id) + '">削除</button>' +
                 '</td></tr>';
         }).join('');
 
-        const head = '<tr><th>No.</th><th>日付</th><th>コード</th>' +
+        const head = '<tr><th>No.</th><th>日付</th>' +
             '<th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>5位</th><th>6位</th><th></th></tr>';
         document.getElementById('recent').innerHTML =
             '<table class="stat-table"><thead>' + head + '</thead><tbody>' +
-            (rows || '<tr><td class="empty" colspan="10">まだ入力がありません</td></tr>') + '</tbody></table>';
+            (rows || '<tr><td class="empty" colspan="9">まだ入力がありません</td></tr>') + '</tbody></table>';
 
         document.querySelectorAll('[data-edit]').forEach(b =>
             b.addEventListener('click', () => loadForEdit(b.dataset.edit)));
@@ -104,7 +96,6 @@
         if (!m) return;
         state.editId = id;
         document.getElementById('date').value = PCS.numToInput(m.date);
-        document.getElementById('code').value = m.code || '';
         document.querySelectorAll('.seat-input').forEach((el, i) => { el.value = nameOf((m.players || [])[i]); });
         document.getElementById('submit-btn').textContent = 'No.' + m.no + ' を更新する';
         renderRecent();
@@ -121,7 +112,6 @@
 
     function resetForm() {
         state.editId = '';
-        document.getElementById('code').value = '';
         document.querySelectorAll('.seat-input').forEach(el => { el.value = ''; });
         document.getElementById('date').value = PCS.numToInput(PCS.todayNum());
         document.getElementById('submit-btn').textContent = 'この結果を登録する';
@@ -157,7 +147,7 @@
         const editing = state.editId && (state.data.matches || {})[state.editId];
         const no = editing ? editing.no : nextNo();
         const id = editing ? state.editId : 'm' + String(no).padStart(5, '0');
-        const match = { id, no, code: document.getElementById('code').value.trim(), date, players: ids };
+        const match = { id, no, date, players: ids };
 
         err.hidden = true;
         PCS.set('matches/' + id, match).then(() => {

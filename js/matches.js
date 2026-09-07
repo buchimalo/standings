@@ -29,7 +29,7 @@
 
         if (kw) {
             list = list.filter(m => {
-                const text = (m.code || '') + ' ' + (m.players || []).map(nameOf).join(' ');
+                const text = (m.players || []).map(nameOf).join(' ');
                 return text.toLowerCase().indexOf(kw) >= 0;
             });
         }
@@ -41,14 +41,14 @@
             const names = (m.players || []).map((id, i) =>
                 '<td class="c-name">' + (i === 0 ? '<b>' : '') + esc(nameOf(id)) + (i === 0 ? '</b>' : '') + '</td>').join('');
             return '<tr><td class="num">' + m.no + '</td><td class="num">' + formatDate(m.date) + '</td>' +
-                '<td>' + esc(m.code || '') + '</td>' + names + '</tr>';
+                names + '</tr>';
         }).join('');
 
-        const head = '<tr><th>No.</th><th>日付</th><th>コード</th>' +
+        const head = '<tr><th>No.</th><th>日付</th>' +
             '<th>1位</th><th>2位</th><th>3位</th><th>4位</th><th>5位</th><th>6位</th></tr>';
         document.getElementById('table').innerHTML =
             '<table class="stat-table"><thead>' + head + '</thead><tbody>' +
-            (rows || '<tr><td class="empty" colspan="9">該当する試合がありません</td></tr>') + '</tbody></table>';
+            (rows || '<tr><td class="empty" colspan="8">該当する試合がありません</td></tr>') + '</tbody></table>';
     }
 
     function renderPeriods() {
