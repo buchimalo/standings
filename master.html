@@ -39,7 +39,6 @@
         <div id="app" hidden>
             <div class="tabs" id="tabs">
                 <button type="button" class="tab is-current" data-tab="players">プレイヤー</button>
-                <button type="button" class="tab" data-tab="teams">チーム</button>
                 <button type="button" class="tab" data-tab="periods">集計期間</button>
             </div>
 
@@ -47,22 +46,11 @@
                 <form class="inline-form" id="player-form">
                     <input type="hidden" id="player-id">
                     <input type="text" id="player-name" placeholder="登録名" required>
-                    <select id="player-team"></select>
                     <input type="text" id="player-youtube" placeholder="YouTube名（任意）">
                     <button type="submit" class="btn-primary">保存</button>
                     <button type="button" class="btn-ghost" data-cancel="player">クリア</button>
                 </form>
                 <div class="table-scroll" id="players"></div>
-            </section>
-
-            <section class="panel" id="pane-teams" hidden>
-                <form class="inline-form" id="team-form">
-                    <input type="hidden" id="team-id">
-                    <input type="text" id="team-name" placeholder="チーム名" required>
-                    <button type="submit" class="btn-primary">保存</button>
-                    <button type="button" class="btn-ghost" data-cancel="team">クリア</button>
-                </form>
-                <div class="table-scroll" id="teams"></div>
             </section>
 
             <section class="panel" id="pane-periods" hidden>
@@ -81,7 +69,7 @@
 
             <section class="panel">
                 <h2 class="panel-title">初期データの取り込み</h2>
-                <p class="note">スプレッドシートから書き出した <code>data/seed.json</code>（チーム7・プレイヤー200・試合10・期間2）を読み込みます。空のときだけ実行してください。</p>
+                <p class="note">スプレッドシートから書き出した <code>data/seed.json</code>（プレイヤー200・試合10・期間2）を読み込みます。空のときだけ実行してください。</p>
                 <button type="button" class="btn-ghost" id="seed-btn">seed.json を取り込む</button>
                 <span class="saved" id="seed-done" hidden></span>
             </section>

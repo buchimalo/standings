@@ -42,7 +42,6 @@
 
     function aggregate(data, period, minGames) {
         const players = data.players || {};
-        const teams = data.teams || {};
         const matches = data.matches || {};
         const from = period ? period.from : 0;
         const to = period ? period.to : 99991231;
@@ -55,7 +54,6 @@
                     id,
                     no: p ? p.no : 9999,
                     name: p ? p.name : '(削除された選手)',
-                    team: p && teams[p.teamId] ? teams[p.teamId].name : '',
                     games: 0, point: 0, sum: 0,
                     counts: [0, 0, 0, 0, 0, 0]
                 };
@@ -109,7 +107,6 @@
     function buildHead() {
         const top = ['<tr>',
             '<th class="c-rank" rowspan="2">順位</th>',
-            '<th class="c-team" rowspan="2">チーム</th>',
             '<th class="c-name" rowspan="2">登録名</th>'];
         let i = 0;
         while (i < COLUMNS.length) {
@@ -137,7 +134,7 @@
         let rows = aggregate(state.data, period, state.minGames);
 
         const kw = state.keyword.trim().toLowerCase();
-        if (kw) rows = rows.filter(r => (r.name + ' ' + r.team).toLowerCase().indexOf(kw) >= 0);
+        if (kw) rows = rows.filter(r => r.name.toLowerCase().indexOf(kw) >= 0);
 
         const col = COLUMNS.find(c => c.key === state.sortKey) || COLUMNS[0];
         rows.sort((a, b) => {
@@ -157,11 +154,10 @@
                 return '<td class="' + cls + '">' + c.fmt(r[c.key]) + '</td>';
             }).join('');
             return '<tr><td class="c-rank">' + (idx === 0 ? '<span class="crown">👑</span>' : idx + 1) + '</td>' +
-                '<td class="c-team">' + esc(r.team) + '</td>' +
                 '<td class="c-name">' + esc(r.name) + '</td>' + cells + '</tr>';
         }).join('');
 
-        const empty = '<tr><td class="empty" colspan="' + (3 + COLUMNS.length) + '">該当する成績がありません</td></tr>';
+        const empty = '<tr><td class="empty" colspan="' + (2 + COLUMNS.length) + '">該当する成績がありません</td></tr>';
         document.getElementById('table').innerHTML =
             '<table class="stat-table"><thead>' + buildHead() + '</thead><tbody>' + (body || empty) + '</tbody></table>';
 
