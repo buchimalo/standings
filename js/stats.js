@@ -144,7 +144,7 @@
         });
 
         document.getElementById('summary').textContent =
-            (period ? period.name : '—') + ' ／ ' + rows.length + '人 ／ ' + countMatches(period) + '試合';
+            (period ? period.name : '全期間') + ' ／ ' + rows.length + '人 ／ ' + countMatches(period) + '試合';
 
         const body = rows.map((r, idx) => {
             const cells = COLUMNS.map(c => {
@@ -174,6 +174,10 @@
     function renderPeriods() {
         const periods = sortedList(state.data.periods);
         if (!periods.some(p => p.id === state.periodId)) state.periodId = periods.length ? periods[0].id : '';
+        if (!periods.length) {
+            document.getElementById('period').innerHTML = '<option value="">全期間</option>';
+            return;
+        }
         document.getElementById('period').innerHTML = periods.map(p => {
             const range = PCS.formatRange(p.from, p.to);
             return '<option value="' + esc(p.id) + '"' + (p.id === state.periodId ? ' selected' : '') + '>' +

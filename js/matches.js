@@ -35,7 +35,7 @@
         }
 
         document.getElementById('summary').textContent =
-            (period ? period.name : '—') + ' ／ ' + list.length + '試合';
+            (period ? period.name : '全期間') + ' ／ ' + list.length + '試合';
 
         const rows = list.map(m => {
             const names = (m.players || []).map((id, i) =>
@@ -54,6 +54,10 @@
     function renderPeriods() {
         const periods = sortedList(state.data.periods);
         if (!periods.some(p => p.id === state.periodId)) state.periodId = periods.length ? periods[0].id : '';
+        if (!periods.length) {
+            document.getElementById('period').innerHTML = '<option value="">全期間</option>';
+            return;
+        }
         document.getElementById('period').innerHTML = periods.map(p => {
             const range = PCS.formatRange(p.from, p.to);
             return '<option value="' + esc(p.id) + '"' + (p.id === state.periodId ? ' selected' : '') + '>' +

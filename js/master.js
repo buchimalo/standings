@@ -141,21 +141,6 @@
         if (sel) sel.value = '';
     }
 
-    /* ---------- 初期データ取り込み ---------- */
-
-    async function importSeed() {
-        const has = ['teams', 'players', 'periods', 'matches'].filter(k => state.data[k] && Object.keys(state.data[k]).length);
-        if (has.length && !confirm('すでに ' + has.join('・') + ' にデータがあります。seed.json の内容で上書きします。よろしいですか？')) return;
-        const res = await fetch('data/seed.json');
-        const seed = await res.json();
-        const map = {};
-        ['teams', 'players', 'periods', 'matches', 'settings'].forEach(k => { if (seed[k]) map[k] = seed[k]; });
-        await PCS.update(map);
-        const done = document.getElementById('seed-done');
-        done.textContent = '取り込みました';
-        done.hidden = false;
-    }
-
     /* ---------- 起動 ---------- */
 
     function start() {
@@ -170,7 +155,6 @@
         document.getElementById('period-form').addEventListener('submit', savePeriod);
         document.querySelectorAll('[data-cancel]').forEach(b =>
             b.addEventListener('click', () => clearForm(b.dataset.cancel)));
-        document.getElementById('seed-btn').addEventListener('click', importSeed);
 
         document.getElementById('period-month').addEventListener('click', () => {
             const m = PCS.currentMonthRange();
