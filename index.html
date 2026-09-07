@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ポカチェ 成績表</title>
+    <link rel="icon" href="images/favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/style.css">
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-database-compat.js"></script>
+</head>
+
+<body>
+    <header class="site-head">
+        <h1 class="site-title">ポカチェ 成績表</h1>
+        <nav class="site-nav">
+            <a href="index.html" class="is-current">成績表</a>
+            <a href="matches.html">試合一覧</a>
+            <a href="master.html">マスタ</a>
+            <a href="input.html" class="btn-primary">結果を入力する</a>
+        </nav>
+    </header>
+
+    <main class="wrap">
+        <section class="controls">
+            <label class="field">
+                <span class="field-label">集計期間</span>
+                <select id="period"></select>
+            </label>
+            <label class="field field-sm">
+                <span class="field-label">規定数</span>
+                <input type="number" id="min-games" value="1" min="0" step="1">
+            </label>
+            <label class="field">
+                <span class="field-label">絞り込み</span>
+                <input type="search" id="keyword" placeholder="登録名 / チーム名">
+            </label>
+            <p class="summary" id="summary"></p>
+        </section>
+
+        <div class="table-scroll" id="table"></div>
+
+        <p class="note">列見出しをクリックすると並び替えできます。ポイントは 1位+4 / 2位+2 / 3位0 / 4位−1 / 5位−2 / 6位−3。</p>
+    </main>
+
+    <script src="js/core.js"></script>
+    <script src="js/stats.js"></script>
+</body>
+
+</html>
