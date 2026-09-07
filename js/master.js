@@ -50,20 +50,22 @@
             '<tr><td class="num">' + p.no + '</td>' +
             '<td class="c-name">' + esc(p.name) + '</td>' +
             '<td>' + esc(p.youtube || '') + '</td>' +
+            '<td>' + esc(p.note || '') + '</td>' +
             '<td class="c-ops">' +
             '<button type="button" class="btn-mini" data-edit-player="' + esc(p.id) + '">編集</button>' +
             '<button type="button" class="btn-mini danger" data-del-player="' + esc(p.id) + '">削除</button>' +
             '</td></tr>').join('');
 
         document.getElementById('players').innerHTML =
-            '<table class="stat-table"><thead><tr><th>№</th><th>登録名</th><th>YouTube名</th><th></th></tr></thead>' +
-            '<tbody>' + (rows || '<tr><td class="empty" colspan="4">まだ登録がありません</td></tr>') + '</tbody></table>';
+            '<table class="stat-table"><thead><tr><th>№</th><th>登録名</th><th>YouTube名</th><th>備考</th><th></th></tr></thead>' +
+            '<tbody>' + (rows || '<tr><td class="empty" colspan="5">まだ登録がありません</td></tr>') + '</tbody></table>';
 
         document.querySelectorAll('[data-edit-player]').forEach(b => b.addEventListener('click', () => {
             const p = state.data.players[b.dataset.editPlayer];
             document.getElementById('player-id').value = p.id;
             document.getElementById('player-name').value = p.name;
             document.getElementById('player-youtube').value = p.youtube || '';
+            document.getElementById('player-note').value = p.note || '';
         }));
         document.querySelectorAll('[data-del-player]').forEach(b => b.addEventListener('click', () => {
             const p = state.data.players[b.dataset.delPlayer];
@@ -86,7 +88,8 @@
             name,
             // チームは画面に出していないが、既存の値は保つ
             teamId: cur ? (cur.teamId || '') : '',
-            youtube: document.getElementById('player-youtube').value.trim()
+            youtube: document.getElementById('player-youtube').value.trim(),
+            note: document.getElementById('player-note').value.trim()
         };
         PCS.set('players/' + rec.id, rec).then(() => clearForm('player'));
     }
