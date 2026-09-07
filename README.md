@@ -40,15 +40,33 @@ stats/
 
 ### Firebase のルール
 
-`stats/` 配下の読み書きが許可されている必要がある。ドラフト会議アプリと同じDBなので、
-ルールが `draft/` だけに限定されている場合は Firebase コンソールで `stats/` を追加する。
+セキュリティルールはデータベースに1枚しかなく、ドラフト会議アプリと共用している。
+ルート直下が `.read: false / .write: false` で、名指しで開けたパスしか通らないため、
+`stats/` のブロックを追記しないと読み書きとも拒否される。
 
-## パスワード
+追記する内容は [`firebase-rules-stats.json`](firebase-rules-stats.json)。
+既存の `draft` / `live` ブロックには触らない。
 
-入力とマスタ編集は簡易パスワードで隠している（クライアント側の SHA-256 照合のみ。
-DBのルールで守っているわけではない）。
+## ログイン
 
-初期値は `pokachi`。変更するときはハッシュを作り直して `js/core.js` の `ADMIN_HASH` を差し替える。
+入力とマスタ編集は **Firebase Authentication（メール/パスワード）の共有アカウント**で守る。
+ルール側も `stats/.write: "auth != null"` にしてあるので、DBのレベルで効いている。
+
+- 共有アカウントのメールアドレスは `js/core.js` の `ADMIN_EMAIL`
+- 画面ではパスワードだけ入力する（メールアドレスはコードに埋め込み）
+- パスワードの変更は Firebase コンソール → Authentication → ユーザー から
+
+### 初期設定
+
+1. Firebase コンソール → **Authentication** → **始める**
+2. **Sign-in method** → **メール/パスワード** を有効にする
+3. **Users** → **ユーザーを追加** で共有アカウントを1つ作る
+4. そのメールアドレスを `js/core.js` の `ADMIN_EMAIL` に書く
+
+### 練習モード（`?demo=1`）のパスワード
+
+Firebase を使わないので、クライアント側の SHA-256 照合のみ。初期値は `pokachi`。
+変えるときは `js/core.js` の `ADMIN_HASH` を差し替える。
 
 ```bash
 node -e "console.log(require('crypto').createHash('sha256').update('新しいパスワード').digest('hex'))"

@@ -1,0 +1,76 @@
+// standings 用に追記するルール。
+// 既存の "draft" / "live" ブロックはそのまま、その隣にこの "stats" ブロックを足す。
+//
+//   1. 読み取りは誰でも（成績表は見せるもの）
+//   2. 書き込みはログイン必須（auth != null）。draft と同じ方針
+//   3. ルート直下と、知らないパスへの書き込みは拒否する
+//   4. teams / players / periods はまるごと消せない（消失事故の形を塞ぐ）
+//   5. 各項目の型・長さ・範囲を検証する
+
+"stats": {
+  ".read": true,
+  ".write": false,
+
+  "teams": {
+    ".write": "auth != null && newData.exists()",
+    "$teamId": {
+      ".validate": "$teamId.matches(/^t[0-9]{1,3}$/) && (!newData.exists() || newData.hasChildren(['id', 'no', 'name']))",
+      "id": { ".validate": "newData.isString() && newData.val() === $teamId" },
+      "no": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 999" },
+      "name": { ".validate": "newData.isString() && newData.val().length <= 40" },
+      "$other": { ".validate": false }
+    }
+  },
+
+  "players": {
+    ".write": "auth != null && newData.exists()",
+    "$playerId": {
+      ".validate": "$playerId.matches(/^p[0-9]{1,4}$/) && (!newData.exists() || newData.hasChildren(['id', 'no', 'name']))",
+      "id": { ".validate": "newData.isString() && newData.val() === $playerId" },
+      "no": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 9999" },
+      "name": { ".validate": "newData.isString() && newData.val().length <= 60" },
+      "teamId": { ".validate": "newData.isString() && newData.val().length <= 20" },
+      "youtube": { ".validate": "newData.isString() && newData.val().length <= 100" },
+      "$other": { ".validate": false }
+    }
+  },
+
+  "periods": {
+    ".write": "auth != null && newData.exists()",
+    "$periodId": {
+      ".validate": "$periodId.matches(/^per[0-9]{1,3}$/) && (!newData.exists() || newData.hasChildren(['id', 'no', 'name', 'from', 'to']))",
+      "id": { ".validate": "newData.isString() && newData.val() === $periodId" },
+      "no": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 999" },
+      "name": { ".validate": "newData.isString() && newData.val().length <= 40" },
+      "from": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99991231" },
+      "to": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 99991231" },
+      "$other": { ".validate": false }
+    }
+  },
+
+  "matches": {
+    ".write": "auth != null",
+    "$matchId": {
+      ".validate": "$matchId.matches(/^m[0-9]{1,6}$/) && (!newData.exists() || newData.hasChildren(['id', 'no', 'date', 'players']))",
+      "id": { ".validate": "newData.isString() && newData.val() === $matchId" },
+      "no": { ".validate": "newData.isNumber() && newData.val() >= 1 && newData.val() <= 999999" },
+      "code": { ".validate": "newData.isString() && newData.val().length <= 10" },
+      "date": { ".validate": "newData.isNumber() && newData.val() >= 19700101 && newData.val() <= 99991231" },
+      "players": {
+        ".validate": "newData.hasChildren(['0', '1', '2', '3', '4', '5'])",
+        "$seat": { ".validate": "$seat.matches(/^[0-5]$/) && newData.isString() && newData.val().length <= 20" }
+      },
+      "$other": { ".validate": false }
+    }
+  },
+
+  "settings": {
+    ".write": "auth != null",
+    "seats": { ".validate": "newData.isNumber() && newData.val() >= 2 && newData.val() <= 10" },
+    "minGames": { ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 9999" },
+    "points": {
+      "$rank": { ".validate": "$rank.matches(/^[1-9]$/) && newData.isNumber() && newData.val() >= -99 && newData.val() <= 99" }
+    },
+    "$other": { ".validate": false }
+  }
+}

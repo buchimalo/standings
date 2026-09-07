@@ -23,7 +23,9 @@
 
     const ADMIN_KEY = 'pcs.admin';
     const DEMO_KEY = 'pcs.demo';
-    // 簡易パスワードの SHA-256。変更手順は README を参照
+    // 入力・マスタ編集用の共有アカウント。パスワードは Firebase 側で照合する
+    const ADMIN_EMAIL = 'standings@example.com';
+    // 練習モード（?demo=1）だけで使う簡易パスワードの SHA-256。初期値は pokachi
     const ADMIN_HASH = '038e0f0d74794838f5d4cadf30962e4e8549941157e702dafd8e4f2f222d4c45';
 
     const SEATS = 6;
@@ -100,18 +102,60 @@
         return [...new Uint8Array(buf)].map(b => b.toString(16).padStart(2, '0')).join('');
     }
 
+    // firebase-auth-compat.js を読み込んだページ（input / master）だけ認証を使う
+    const hasAuth = !DEMO && typeof firebase !== 'undefined' && typeof firebase.auth === 'function';
+
+    let adminNow = false;
+    // ログイン済みかどうかが確定するまでは、パスワード欄も本体も出さない
+    let adminSettled = DEMO || !hasAuth;
+    const adminWatchers = [];
+
+    if (DEMO) {
+        try { adminNow = sessionStorage.getItem(ADMIN_KEY) === '1'; } catch (e) { /* 無視 */ }
+    } else if (hasAuth) {
+        firebase.auth().onAuthStateChanged(user => {
+            adminNow = !!user;
+            adminSettled = true;
+            adminWatchers.forEach(fn => fn(adminNow));
+        });
+    }
+
+    function onAdmin(fn) {
+        adminWatchers.push(fn);
+        if (adminSettled) fn(adminNow);
+    }
+
     function isAdmin() {
-        try { return sessionStorage.getItem(ADMIN_KEY) === '1'; } catch (e) { return false; }
+        return adminNow;
     }
 
     async function login(password) {
-        const ok = (await sha256(password)) === ADMIN_HASH;
-        if (ok) { try { sessionStorage.setItem(ADMIN_KEY, '1'); } catch (e) { /* 無視 */ } }
-        return ok;
+        if (DEMO) {
+            const ok = (await sha256(password)) === ADMIN_HASH;
+            if (ok) {
+                try { sessionStorage.setItem(ADMIN_KEY, '1'); } catch (e) { /* 無視 */ }
+                adminNow = true;
+                adminWatchers.forEach(fn => fn(true));
+            }
+            return ok;
+        }
+        if (!hasAuth) return false;
+        try {
+            await firebase.auth().signInWithEmailAndPassword(ADMIN_EMAIL, password);
+            return true;
+        } catch (e) {
+            return false;
+        }
     }
 
     function logout() {
-        try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) { /* 無視 */ }
+        if (DEMO) {
+            try { sessionStorage.removeItem(ADMIN_KEY); } catch (e) { /* 無視 */ }
+            adminNow = false;
+            adminWatchers.forEach(fn => fn(false));
+            return Promise.resolve();
+        }
+        return hasAuth ? firebase.auth().signOut() : Promise.resolve();
     }
 
     /* ---------- 文字列・日付 ---------- */
@@ -191,7 +235,7 @@
     global.PCS = {
         DEMO, ROOT, SEATS, RANK_POINTS,
         subscribe, set, remove, update,
-        isAdmin, login, logout,
+        isAdmin, onAdmin, login, logout,
         esc, todayNum, numToInput, inputToNum, formatDate, formatRange, currentMonthRange,
         showDemoBanner, sortedList
     };

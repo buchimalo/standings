@@ -8,20 +8,19 @@
 
     /* ---------- パスワード ---------- */
 
-    function openApp() {
-        document.getElementById('gate').hidden = true;
-        document.getElementById('app').hidden = false;
-        start();
-    }
+    let started = false;
 
     function initGate() {
-        if (PCS.isAdmin()) { openApp(); return; }
-        document.getElementById('gate').hidden = false;
         document.getElementById('login-form').addEventListener('submit', async e => {
             e.preventDefault();
             const ok = await PCS.login(document.getElementById('password').value);
             document.getElementById('login-error').hidden = ok;
-            if (ok) openApp();
+        });
+
+        PCS.onAdmin(ok => {
+            document.getElementById('gate').hidden = ok;
+            document.getElementById('app').hidden = !ok;
+            if (ok && !started) { started = true; start(); }
         });
     }
 
