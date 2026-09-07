@@ -1,5 +1,5 @@
 /* ============================================================
-   ポカチェ 成績表 — デザインシステム
+   ポーカーフェイト成績表 — デザインシステム
    数字を読ませる画面なので、面は無彩色、色は状態にだけ使う
    ============================================================ */
 
@@ -8,6 +8,8 @@
     --carbon: #12151b;
     --panel: #171b23;
     --raised: #1e232d;
+    /* 立ち絵をうっすら透かすための面 */
+    --surface: rgba(18, 21, 27, 0.9);
 
     --line: #232935;
     --line-strong: #333c4c;
@@ -57,7 +59,6 @@ body::after {
     width: min(72vh, 88vw);
     height: min(72vh, 88vw);
     background: url(../images/chara.png) center bottom / contain no-repeat;
-    opacity: 0.5;
     pointer-events: none;
     z-index: 0;
 }
@@ -193,7 +194,7 @@ code {
 }
 
 .panel {
-    background: var(--carbon);
+    background: var(--surface);
     border: 1px solid var(--line);
     border-radius: var(--r);
     padding: 20px;
@@ -281,7 +282,7 @@ select:focus {
     overflow-x: auto;
     border: 1px solid var(--line);
     border-radius: var(--r);
-    background: var(--carbon);
+    background: var(--surface);
 }
 
 .stat-table {
